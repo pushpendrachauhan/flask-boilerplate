@@ -1,0 +1,2 @@
+ES_USER_INDEX = 'users'
+ES_USER_INDEX_TYPE = 'user'

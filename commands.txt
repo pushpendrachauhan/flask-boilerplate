@@ -1,0 +1,103 @@
+
+docker run \
+    -p7474:7474 -p7687:7687 \
+    -d \
+    -v $HOME/neo4j/data:/data \
+    -v $HOME/neo4j/logs:/logs \
+    -v $HOME/neo4j/import:/var/lib/neo4j/import \
+    -v $HOME/neo4j/plugins:/plugins \
+    --env NEO4J_AUTH=neo4j/test \
+	 neo4j:latest
+
+
+docker run \
+       -p 9200:9200 \
+       -d \
+       -p 9300:9300 \
+       -v $HOME/es/data:/data \
+       -e "discovery.type=single-node" \
+       -e "xpack.security.enabled=false" \
+       docker.elastic.co/elasticsearch/elasticsearch-platinum:6.0.0
+
+docker run  -v $HOME/postgres/data:/data -p 5433:5432 -e POSTGRES_PASSWORD=123456 -d postgres
+
+
+CREATE (n:US {name: 'anurr', title: 'Developer', username: 'anu'})
+
+CREATE (n:US {name: 'prarr', title: 'Developer', username: 'pra'})
+
+CREATE (n:US {name: 'churr', title: 'Developer', username: 'chu'})
+
+CREATE (n:US {name: 'ranrr', title: 'Developer', username: 'ran'})
+
+CREATE (n:US {name: 'dobrr', title: 'Developer', username: 'dob'})
+
+--------
+
+CREATE (n:PO { text: 'just a test ', text_id: 1})
+
+
+CREATE (n:PO { text: ' breakfast recipe', text_id: 2})
+
+-----
+
+CREATE (n:PO {text: ' what a way',text_id:3})
+
+CREATE (n:PO {text: 'monday blues',text_id:4})
+
+CREATE (n:PO {text : ' nice shot ',text_id:5})
+
+
+-------
+
+MATCH (a:US), (b:US) WHERE a.username = 'anu' AND b.username = 'pra' CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:US) WHERE a.username = 'anu' AND b.username = 'chu' CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:US) WHERE a.username = 'anu' AND b.username = 'ran' CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:US) WHERE a.username = 'anu' AND b.username = 'dob' CREATE (a)-[r:FO]->(b) RETURN type(r)
+
+
+MATCH (a:US), (b:PO) WHERE a.username = 'pra' AND b.text_id = 1 CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:PO) WHERE a.username = 'pra' AND b.text_id = 2 CREATE (a)-[r:FO]->(b) RETURN type(r)
+
+MATCH (a:US), (b:PO) WHERE a.username = 'chu' AND b.text_id = 3 CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:PO) WHERE a.username = 'ran' AND b.text_id = 4 CREATE (a)-[r:FO]->(b) RETURN type(r)
+MATCH (a:US), (b:PO) WHERE a.username = 'dob' AND b.text_id = 5 CREATE (a)-[r:FO]->(b) RETURN type(r)
+
+
+
+MATCH (a:US),(b:PO) WHERE a.username = 'pra' AND b.text_id = 1 CREATE (a)-[r:CR {c_time:11}]->(b) RETURN r
+MATCH (a:US),(b:PO) WHERE a.username = 'pra' AND b.text_id = 2  CREATE (a)-[r:CR {c_time:12 }]->(b) RETURN r
+
+MATCH (a:US),(b:PO) WHERE a.username = 'chu' AND b.text_id = 3 CREATE (a)-[r:CR {c_time:13}]->(b) RETURN r
+MATCH (a:US),(b:PO) WHERE a.username = 'ran' AND b.text_id = 4 CREATE (a)-[r:CR {c_time:14}]->(b) RETURN r
+MATCH (a:US),(b:PO) WHERE a.username = 'dob' AND b.text_id = 5 CREATE (a)-[r:CR {c_time:15}]->(b) RETURN r
+
+
+MATCH (u:US {username:'anu'})-[:FO]->(f:US)
+RETURN f,u
+
+MATCH (u:US {username:'pra'})-[:CR]->(f:PO)
+RETURN f,u
+
+
+MATCH (u:US {username:'anu'})-[:FO]->(f:US)-[p:CR]->(m:PO)
+WHERE p.c_time >22
+RETURN f, p, m
+ORDER BY p.c_time DESC
+
+
+MATCH (u:US {username:'anu'})-[:FO]->(f:US)-[p:CR]->(m:PO)
+WHERE p.c_time >10
+RETURN p,m
+ORDER BY p.c_time DESC
+
+
+MATCH (u:US {username:'anu'})-[:FO]->(f:US)-[p:CR]->(m:PO)
+WHERE p.c_time >10
+RETURN p,m
+ORDER BY p.c_time DESC
+SKIP 2 
+LIMIT 2; 
+
+
+
